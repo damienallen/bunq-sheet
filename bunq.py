@@ -2,6 +2,7 @@ from dateutil import parser as dateparse
 from datetime import datetime, timedelta
 import socket
 import argparse
+import warnings
 
 from bunq.sdk.client import Pagination
 from bunq.sdk.context import ApiEnvironmentType, ApiContext, BunqContext
@@ -19,6 +20,10 @@ def unix_time(dt):
     return (dt - epoch).total_seconds()
 
 
+# Subpress unknown bunq warnings
+warnings.filterwarnings(action="ignore", category=UserWarning)
+
+
 def iterate_transactions(account):
 
     # Loop until end of account
@@ -30,7 +35,7 @@ def iterate_transactions(account):
             pagination.count = 100
             params = pagination.url_params_count_only
         else:
-            # When there is already a paged request, you can get the next page from it, no need to create it ourselfs:
+            # Get next page if available
             try:
                 params = last_result.pagination.url_params_previous_page
             except BunqException:
@@ -43,14 +48,14 @@ def iterate_transactions(account):
         if len(last_result.value) == 0:
             break
 
-        # The data is in the '.value' field.
+        # Return payment data
         for payment in last_result.value:
             yield payment
 
 
 def fetch_transactions(days):
 
-    # Ensure the whole account is included
+    # Load API
     print("\nLoading Bunq API environment...")
     env = ApiEnvironmentType.PRODUCTION
 
@@ -103,6 +108,6 @@ if __name__ == "__main__":
         "-d", "--days", action="store", help="Days of transactions to fetch"
     )
     args = parser.parse_args()
-    days = args.days if args.days else 7
+    days = int(args.days) if args.days else 7
 
     fetch_transactions(days)

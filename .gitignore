@@ -1,3 +1,7 @@
 .vscode
 secret.py
+credentials.json
+token.pickle
+bunq-production.conf
+dumps/
 *.pyc

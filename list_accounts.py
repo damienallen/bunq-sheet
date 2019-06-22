@@ -5,7 +5,7 @@ from bunq.sdk.context import ApiEnvironmentType, ApiContext, BunqContext
 from bunq.sdk.exception import BunqException
 from bunq.sdk.model.generated import endpoint
 
-from secret import API_KEY, ACCOUNT_ID
+from secret import API_KEY
 
 
 def list_accounts():
@@ -13,7 +13,7 @@ def list_accounts():
     List all shared accounts (id, name, balance)
     """
 
-    # Ensure the whole account is included
+    # Load API
     print("\nLoading Bunq API environment...")
     env = ApiEnvironmentType.PRODUCTION
 
